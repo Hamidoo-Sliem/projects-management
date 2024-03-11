@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+use App\Models\GmailCredential;
+
+class ProjectApproveDate extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+      public static $mailData;
+     public function __construct($mailData = [])
+	{
+		self::$mailData = $mailData;
+
+	}
+
+	/**
+	 * Build the message.
+	 *
+	 * @return $this
+	 */
+	public function build()
+	{
+		$from = GmailCredential::find(1)->email;
+		$app_name = config('custom.project_name');
+		$title = self::$mailData['project_title'];
+
+		return $this->markdown('mails.ProjectApproveDate')->with('PData', self::$mailData)
+			->from($from, $app_name)
+			->subject("موعد ترسية مشروع ({$title})")
+			->replyTo('', $app_name);
+	}
+    
+}
